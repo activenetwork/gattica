@@ -28,13 +28,13 @@ module Gattica
       when :long
         columns.concat(["id", "updated", "title"])
         unless @points.empty?   # if there was at least one result
-          columns.concat(@points.first.dimensions.map {|d| d.key})
-          columns.concat(@points.first.metrics.map {|m| m.key})
+          columns.concat(@points.first.dimensions.map {|d| d.keys.first})
+          columns.concat(@points.first.metrics.map {|m| m.keys.first})
         end    
       when :short
         unless @points.empty?   # if there was at least one result
-          columns.concat(@points.first.dimensions.map {|d| d.key})
-          columns.concat(@points.first.metrics.map {|m| m.key})
+          columns.concat(@points.first.dimensions.map {|d| d.keys.first})
+          columns.concat(@points.first.metrics.map {|m| m.keys.first})
         end    
       when :noheader
       end

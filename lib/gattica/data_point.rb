@@ -37,10 +37,10 @@ module Gattica
       end
       
       # output all dimensions
-      columns.concat(@dimensions.map {|d| d.value})
+      columns.concat(@dimensions.map {|d| d.values.first})
       
       # output all metrics
-      columns.concat(@metrics.map {|m| m.value})
+      columns.concat(@metrics.map {|m| m.values.first})
 
       output = CSV.generate_line(columns)      
       return output

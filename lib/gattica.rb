@@ -11,7 +11,6 @@ require 'nokogiri'
 require 'yaml'
 
 # internal
-require 'gattica/core_extensions'
 require 'gattica/convertible'
 require 'gattica/exceptions'
 require 'gattica/user'
