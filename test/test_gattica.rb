@@ -10,7 +10,7 @@ class TestUser < Test::Unit::TestCase
       :dimensions => ['pageTitle','pagePath'], 
       :metrics => ['pageviews'], 
       :sort => '-pageviews',
-      'max-results' => '3'}, 'ga-profile_id')
+      :max_results => '3'}, 'ga-profile_id')
     assert_equal expected, result
   end
 end

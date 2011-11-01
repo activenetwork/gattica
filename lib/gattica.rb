@@ -219,7 +219,7 @@ module Gattica
         
         results = result if results.nil?
         total_results = result.total_results
-        args[:start_index] += args[:max_results]
+        args[:start_index] += result.items_per_page
         break if !args[:page] # only continue while if we are suppose to page
       end 
       return results if fh.nil?
@@ -274,6 +274,7 @@ module Gattica
       ga_metrics    = query_params.delete(:metrics)
       ga_sort       = query_params.delete(:sort)
       ga_filters    = query_params.delete(:filters)
+      ga_max_results = query_params.delete(:max_results)
       
       output = "ids=ga:#{profile}&start-date=#{ga_start_date}&end-date=#{ga_end_date}"
       unless ga_dimensions.nil? || ga_dimensions.empty?
@@ -293,7 +294,7 @@ module Gattica
       end
       
       # TODO: update so that in regular expression filters (=~ and !~), any initial special characters in the regular expression aren't also picked up as part of the operator (doesn't cause a problem, but just feels dirty)
-      unless args[:filters].empty?    # filters are a little more complicated because they can have all kinds of modifiers
+      unless args[:filters].nil? || args[:filters].empty?    # filters are a little more complicated because they can have all kinds of modifiers
         output += '&filters=' + args[:filters].collect do |filter|
           match, name, operator, expression = *filter.match(/^(\w*)\s*([=!<>~@]*)\s*(.*)$/)           # splat the resulting Match object to pull out the parts automatically
           unless name.empty? || operator.empty? || expression.empty?                      # make sure they all contain something
@@ -303,7 +304,11 @@ module Gattica
           end
         end.join(';')
       end
- 
+
+      unless ga_max_results.nil?
+        output << "&max-results=#{ga_max_results}"
+      end
+
       query_params.inject(output) {|m,(key,value)| m << "&#{key}=#{value}"}
  
       return output
@@ -312,11 +317,15 @@ module Gattica
     
     # Validates that the args passed to +get+ are valid
     def validate_and_clean(args)
+      [:dimensions, :metrics].each do |key|
+        value = args[key] || []
+        args[key] = value.respond_to?(:to_ary) ? value.to_ary : [value]
+      end
       
-      raise GatticaError::MissingStartDate, ':start_date is required' if args[:start_date].nil? || args[:start_date].empty?
-      raise GatticaError::MissingEndDate, ':end_date is required' if args[:end_date].nil? || args[:end_date].empty?
-      raise GatticaError::TooManyDimensions, 'You can only have a maximum of 7 dimensions' if args[:dimensions] && (args[:dimensions].is_a?(Array) && args[:dimensions].length > 7)
-      raise GatticaError::TooManyMetrics, 'You can only have a maximum of 10 metrics' if args[:metrics] && (args[:metrics].is_a?(Array) && args[:metrics].length > 10)
+      raise GatticaError::MissingStartDate, ':start_date is required' if args[:start_date].to_s.empty?
+      raise GatticaError::MissingEndDate, ':end_date is required' if args[:end_date].to_s.empty?
+      raise GatticaError::TooManyDimensions, 'You can only have a maximum of 7 dimensions' if args[:dimensions].length > 7
+      raise GatticaError::TooManyMetrics, 'You can only have a maximum of 10 metrics' if args[:metrics].length > 10
       
       possible = args[:dimensions] + args[:metrics]
       
