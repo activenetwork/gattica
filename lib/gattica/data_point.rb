@@ -13,14 +13,14 @@ module Gattica
     # Parses the XML <entry> element
     def initialize(xml)
       @xml = xml.to_s
-      @id = xml.at('id').inner_html
-      @updated = DateTime.parse(xml.at('updated').inner_html)
-      @title = xml.at('title').inner_html
-      @dimensions = xml.search('dxp:dimension').collect do |dimension|
-        { dimension.attributes['name'].split(':').last.to_sym => dimension.attributes['value'].split(':', 1).last }
+      @id = xml.at_xpath('xmlns:id').text
+      @updated = DateTime.parse(xml.at_xpath('xmlns:updated').text)
+      @title = xml.at_xpath('xmlns:title').text
+      @dimensions = xml.xpath('dxp:dimension').collect do |dimension|
+        { dimension['name'].split(':').last.to_sym => dimension['value'].split(':', 1).last }
       end
-      @metrics = xml.search('dxp:metric').collect do |metric|
-        { metric.attributes['name'].split(':').last.to_sym => metric.attributes['value'].split(':', 1).last.to_i }
+      @metrics = xml.xpath('dxp:metric').collect do |metric|
+        { metric['name'].split(':').last.to_sym => metric['value'].split(':', 1).last.to_i }
       end
     end
     

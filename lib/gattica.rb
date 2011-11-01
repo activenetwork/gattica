@@ -7,7 +7,7 @@ require 'uri'
 require 'cgi'
 require 'logger'
 require 'rubygems'
-require 'hpricot'
+require 'nokogiri'
 require 'yaml'
 
 # internal
@@ -121,8 +121,8 @@ module Gattica
       # if we haven't retrieved the user's accounts yet, get them now and save them
       if @user_accounts.nil?
         data = do_http_get('/analytics/feeds/accounts/default')
-        xml = Hpricot(data)
-        @user_accounts = xml.search(:entry).collect { |entry| Account.new(entry) }
+        xml = Nokogiri.XML(data)
+        @user_accounts = xml.root.xpath('xmlns:entry').collect { |entry| Account.new(entry) }
       end
       return @user_accounts
     end
@@ -203,7 +203,7 @@ module Gattica
         @logger.debug("Query String: " + query_string) if @debug
 
         data = do_http_get("/analytics/feeds/data?#{query_string}")
-        result = DataSet.new(Hpricot.XML(data))
+        result = DataSet.new(Nokogiri.XML(data).root)
         
         #handle returning results
         results.points.concat(result.points) if !results.nil? && fh.nil?

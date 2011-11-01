@@ -1,6 +1,6 @@
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 begin
   require 'jeweler'
@@ -11,7 +11,7 @@ begin
     gemspec.homepage = "http://github.com/activenetwork/gattica"
     gemspec.description = "Gattica is a Ruby library for extracting data from the Google Analytics API."
     gemspec.authors = ["The Active Network"]
-    gemspec.add_dependency('hpricot','>=0.6.164')
+    gemspec.add_dependency('nokogiri', ['>=1.4.0', '<1.6'])
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
