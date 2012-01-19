@@ -320,6 +320,7 @@ module Gattica
       raise GatticaError::TooManyMetrics, 'You can only have a maximum of 10 metrics' if args[:metrics] && (args[:metrics].is_a?(Array) && args[:metrics].length > 10)
       
       possible = args[:dimensions] + args[:metrics]
+      possibleCustom = ['customVarKey', 'customVarValue']
       
       # make sure that the user is only trying to sort fields that they've previously included with dimensions and metrics
       if args[:sort]
@@ -332,18 +333,17 @@ module Gattica
       end
       
       # make sure that the user is only trying to filter fields that are in dimensions or metrics
-      # if args[:filters]
-      #   missing = args[:filters].find_all do |arg|
-      #     !possible.include? arg.match(/^\w*/).to_s    # get the name of the filter and compare
-      #   end
-      #   unless missing.empty?
-      #     raise GatticaError::InvalidSort, "You are trying to filter by fields that are not in the available dimensions or metrics: #{missing.join(', ')}"
-      #   end
-      # end
+      if args[:filters]
+        missing = args[:filters].find_all do |arg|
+          !possible.include?(arg.match(/^\w*/).to_s) && !possibleCustom.include?(arg.match(/^\D*/).to_s) # get the name of the filter and compare
+        end
+        unless missing.empty?
+          raise GatticaError::InvalidSort, "You are trying to filter by fields that are not in the available dimensions or metrics: #{missing.join(', ')}"
+        end
+      end
       
       return args
     end
-    
     
   end
 end
