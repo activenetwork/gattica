@@ -274,8 +274,9 @@ module Gattica
       ga_metrics    = query_params.delete(:metrics)
       ga_sort       = query_params.delete(:sort)
       ga_filters    = query_params.delete(:filters)
+      ga_max_results = query_params.delete(:max_results)
       
-      output = "ids=ga:#{profile}&start-date=#{ga_start_date}&end-date=#{ga_end_date}"
+      output = "ids=ga:#{profile}&start-date=#{ga_start_date}&end-date=#{ga_end_date}&max-results=#{ga_max_results}"
       unless ga_dimensions.nil? || ga_dimensions.empty?
         output += '&dimensions=' + ga_dimensions.collect do |dimension|
           "ga:#{dimension}"
@@ -319,6 +320,7 @@ module Gattica
       raise GatticaError::TooManyMetrics, 'You can only have a maximum of 10 metrics' if args[:metrics] && (args[:metrics].is_a?(Array) && args[:metrics].length > 10)
       
       possible = args[:dimensions] + args[:metrics]
+      possibleCustom = ['customVarKey', 'customVarValue']
       
       # make sure that the user is only trying to sort fields that they've previously included with dimensions and metrics
       if args[:sort]
@@ -333,7 +335,7 @@ module Gattica
       # make sure that the user is only trying to filter fields that are in dimensions or metrics
       if args[:filters]
         missing = args[:filters].find_all do |arg|
-          !possible.include? arg.match(/^\w*/).to_s    # get the name of the filter and compare
+          !possible.include?(arg.match(/^\w*/).to_s) && !possibleCustom.include?(arg.match(/^\D*/).to_s) # get the name of the filter and compare
         end
         unless missing.empty?
           raise GatticaError::InvalidSort, "You are trying to filter by fields that are not in the available dimensions or metrics: #{missing.join(', ')}"
@@ -342,7 +344,6 @@ module Gattica
       
       return args
     end
-    
     
   end
 end
