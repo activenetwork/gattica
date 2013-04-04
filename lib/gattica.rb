@@ -10,6 +10,10 @@ require 'rubygems'
 require 'nokogiri'
 require 'yaml'
 
+module Gattica
+  VERSION = '0.4.0'
+end
+
 # internal
 require 'gattica/convertible'
 require 'gattica/exceptions'
@@ -24,9 +28,6 @@ require 'gattica/data_point'
 # Please see the README for usage docs.
 
 module Gattica
-  
-  VERSION = '0.4.0'
-  
   # Creates a new instance of Gattica::Engine and gets us going. Please see the README for usage docs.
   #
   #   ga = Gattica.new({:email => 'anonymous@anon.com', :password => 'password, :profile_id => 123456 })
