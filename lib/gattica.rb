@@ -239,7 +239,7 @@ module Gattica
     # sure it's valid and not an error
     
     def do_http_get(query_string)
-      response, data = @http.get(query_string, @headers)
+      response = @http.get(query_string, @headers)
       
       # error checking
       if response.code != '200'
@@ -253,7 +253,7 @@ module Gattica
         end
       end
       
-      return data
+      return response.body
     end
     
     private
@@ -317,7 +317,7 @@ module Gattica
     
     # Validates that the args passed to +get+ are valid
     def validate_and_clean(args)
-      [:dimensions, :metrics].each do |key|
+      [:dimensions, :metrics, :sort, :filters].each do |key|
         value = args[key] || []
         args[key] = value.respond_to?(:to_ary) ? value.to_ary : [value]
       end
