@@ -19,7 +19,7 @@ module Gattica
     def initialize(http, user)
       options = OPTIONS.merge(user.to_h)
       
-      response, data = http.post(SCRIPT_NAME, options.to_query, HEADERS)
+      response = http.post(SCRIPT_NAME, options.to_query, HEADERS)
       if response.code != '200'
         case response.code
         when '403'
@@ -28,7 +28,7 @@ module Gattica
           raise GatticaError::UnknownAnalyticsError, response.body + " (status code: #{response.code})"
         end
       end
-      @tokens = parse_tokens(data)
+      @tokens = parse_tokens(response.body)
     end
   
   
