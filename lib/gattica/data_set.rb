@@ -1,13 +1,13 @@
 module Gattica
-  
+
   # Encapsulates the data returned by the GA API
-  
+
   class DataSet
-    
+
     include Convertible
-    
+
     attr_reader :total_results, :start_index, :items_per_page, :start_date, :end_date, :points, :xml
-      
+
     def initialize(xml)
       @xml = xml.to_s
       @total_results = xml.at('openSearch:totalResults').inner_html.to_i
@@ -17,7 +17,7 @@ module Gattica
       @end_date = Date.parse(xml.at('dxp:endDate').inner_html)
       @points = xml.search(:entry).collect { |entry| DataPoint.new(entry) }
     end
-    
+
     def to_csv_header(format = :long)
       # build the headers
       output = ''
@@ -28,28 +28,28 @@ module Gattica
       when :long
         columns.concat(["id", "updated", "title"])
         unless @points.empty?   # if there was at least one result
-          columns.concat(@points.first.dimensions.map {|d| d.key})
-          columns.concat(@points.first.metrics.map {|m| m.key})
-        end    
+          columns.concat(@points.first.dimensions.map {|d| d.keys.first})
+          columns.concat(@points.first.metrics.map {|m| m.keys.first})
+        end
       when :short
         unless @points.empty?   # if there was at least one result
-          columns.concat(@points.first.dimensions.map {|d| d.key})
-          columns.concat(@points.first.metrics.map {|m| m.key})
-        end    
+          columns.concat(@points.first.dimensions.map {|d| d.keys.first})
+          columns.concat(@points.first.metrics.map {|m| m.keys.first})
+        end
       when :noheader
       end
-      
-      output = CSV.generate_line(columns) + "\n" if (columns.size > 0) 
 
-      return output    
+      output = CSV.generate_line(columns) + "\n" if (columns.size > 0)
+
+      return output
     end
-    
-    # output important data to CSV, ignoring all the specific data about this dataset 
+
+    # output important data to CSV, ignoring all the specific data about this dataset
     # (total_results, start_date) and just output the data from the points
-    
+
     def to_csv(format = :long)
       output = ''
-      
+
       # build the headers
       output = to_csv_header(format)
 
@@ -57,11 +57,11 @@ module Gattica
       @points.each do |point|
         output += point.to_csv(format) + "\n"
       end
-      
+
       return output
     end
-    
-    
+
+
     def to_yaml
       { 'total_results' => @total_results,
         'start_index' => @start_index,
@@ -70,7 +70,7 @@ module Gattica
         'end_date' => @end_date,
         'points' => @points}.to_yaml
     end
-    
+
   end
-  
+
 end

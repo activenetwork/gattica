@@ -29,7 +29,6 @@ Gem::Specification.new do |s|
      "lib/gattica/account.rb",
      "lib/gattica/auth.rb",
      "lib/gattica/convertible.rb",
-     "lib/gattica/core_extensions.rb",
      "lib/gattica/data_point.rb",
      "lib/gattica/data_set.rb",
      "lib/gattica/exceptions.rb",
