@@ -103,7 +103,7 @@ You will probably find that as you try different filters, GA will report that so
 valid. I haven't found any documentation that says which filter combinations are valid in what 
 circumstances, so I suppose it's just trial and error at this point.
 
-For more on filtering syntax, see the Analytics API docs: http://code.google.com/apis/analytics/docs/gdata/gdataReference.html#filtering
+For more on filtering syntax, see the Analytics API docs: https://developers.google.com/analytics/devguides/reporting/core/v3/reference#filters
   
 = Output
 When Gattica was originally created it was intended to take the data returned and put it into
